@@ -106,32 +106,32 @@ export default function App() {
               <MDBTabs justify className='mb-3 pb-3'>
                 <MDBTabsItem>
                   <MDBTabsLink onClick={() => handleChangeTab('matches')} active={activeTab === 'matches'}>
-                    <MDBIcon fas icon='list' className='me-2' /> Matches
+                    <MDBIcon fas icon='list' className='me-2 pb-1' /> Matches
                   </MDBTabsLink>
                 </MDBTabsItem>
                 <MDBTabsItem>
                   <MDBTabsLink onClick={() => handleChangeTab('eventStats')} active={activeTab === 'eventStats'}>
-                    <MDBIcon fas icon='chart-line' className='me-2' /> Event Stats
+                    <MDBIcon fas icon='chart-line' className='me-2 pb-1' /> Event Stats
                   </MDBTabsLink>
                 </MDBTabsItem>
                 <MDBTabsItem>
                   <MDBTabsLink onClick={() => handleChangeTab('posessionStats')} active={activeTab === 'posessionStats'}>
-                    <MDBIcon fas icon='chart-pie' className='me-2' /> Posession Stats
+                    <MDBIcon fas icon='chart-pie' className='me-2 pb-1' /> Posession Stats
                   </MDBTabsLink>
                 </MDBTabsItem>
                 <MDBTabsItem>
                   <MDBTabsLink onClick={() => handleChangeTab('uploadMatch')} active={activeTab === 'uploadMatch'}>
-                    <MDBIcon fas icon='upload' className='me-2' /> Upload Match
+                    <MDBIcon fas icon='upload' className='me-2 pb-1' /> Upload Match
                   </MDBTabsLink>
                 </MDBTabsItem>
                 <MDBTabsItem>
                   <MDBTabsLink onClick={() => handleChangeTab('timeline')} active={activeTab === 'timeline'}>
-                    <MDBIcon fas icon='comments' className='me-2' /> Timeline
+                    <MDBIcon fas icon='comments' className='me-2 pb-1' /> Timeline
                   </MDBTabsLink>
                 </MDBTabsItem>
                 <MDBTabsItem>
                   <MDBTabsLink onClick={() => handleChangeTab('comparison')} active={activeTab === 'comparison'}>
-                    <MDBIcon fas icon='scale-unbalanced' className='me-2' /> Comparison
+                    <MDBIcon fas icon='scale-unbalanced' className='me-2 pb-1' /> Comparison
                   </MDBTabsLink>
                 </MDBTabsItem>
               </MDBTabs>

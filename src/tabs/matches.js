@@ -13,6 +13,14 @@ import {
     MDBProgress,
     MDBProgressBar,
     MDBBadge,
+    MDBInput,
+    MDBCheckbox,
+    MDBDropdown,
+    MDBDropdownToggle,
+    MDBDropdownMenu,
+    MDBDropdownItem,
+    MDBDropdownLink,
+    MDBDropdownDivider,
 } from 'mdb-react-ui-kit';
 
 export default function Matches({setMatchForStats, setMatchesForComparison, setTab}){
@@ -25,6 +33,10 @@ export default function Matches({setMatchForStats, setMatchesForComparison, setT
             team1Goals: 3,
             team2Goals: 3,
             processedPercentage: 100,
+            totalGoals: 6,
+            totalShots: 10,
+            totalPasses: 100,
+            totalCrosses: 10,
         },
         {
             matchId: 2,
@@ -34,6 +46,10 @@ export default function Matches({setMatchForStats, setMatchesForComparison, setT
             team1Goals: 2,
             team2Goals: 1,
             processedPercentage: 100,
+            totalGoals: 3,
+            totalShots: 10,
+            totalPasses: 80,
+            totalCrosses: 7,
         },
         {
             matchId: 3,
@@ -43,6 +59,10 @@ export default function Matches({setMatchForStats, setMatchesForComparison, setT
             team1Goals: 1,
             team2Goals: 2,
             processedPercentage: 100,
+            totalGoals: 3,
+            totalShots: 5,
+            totalPasses: 50,
+            totalCrosses: 3,
         },
         {
             matchId: 4,
@@ -52,6 +72,10 @@ export default function Matches({setMatchForStats, setMatchesForComparison, setT
             team1Goals: 1,
             team2Goals: 0,
             processedPercentage: 100,
+            totalGoals: 1,
+            totalShots: 5,
+            totalPasses: 50,
+            totalCrosses: 20,
         },
         {
             matchId: 5,
@@ -61,9 +85,63 @@ export default function Matches({setMatchForStats, setMatchesForComparison, setT
             team1Goals: 0,
             team2Goals: 1,
             processedPercentage: 75,
+            totalGoals: 0,
+            totalShots: 0,
+            totalPasses: 0,
+            totalCrosses: 0,
         },
     ];
+
+    // search terms
+    const [team1NameSearch, setTeam1NameSearch] = useState('');
+    const [team2NameSearch, setTeam2NameSearch] = useState('');
+    const [startDateSearch, setStartDateSearch] = useState('');
+    const [endDateSearch, setEndDateSearch] = useState('');
+
+    // sort terms (default to date) and order (default to descending) and only one sort term can be active at a time
+    const [sortTerm, setSortTerm] = useState('date');
     
+    // show only processed matches
+    const [showOnlyProcessed, setShowOnlyProcessed] = useState(false);
+
+    // filter and sort data based on above states
+    const filteredData = data.filter((match) => {
+        if (showOnlyProcessed && match.processedPercentage < 100) {
+            return false;
+        }
+        if (team1NameSearch && !match.team1Name.toLowerCase().includes(team1NameSearch.toLowerCase())) {
+            return false;
+        }
+        if (team2NameSearch && !match.team2Name.toLowerCase().includes(team2NameSearch.toLowerCase())) {
+            return false;
+        }
+        // we need to properly parse the date string to compare it to the search date
+        if (startDateSearch && new Date(match.date) < new Date(startDateSearch)) {
+            return false;
+        }
+        if (endDateSearch && new Date(match.date) > new Date(endDateSearch)) {
+            return false;
+        }
+        return true;
+    }).sort((a, b) => {
+        if (sortTerm === 'date') {
+            return new Date(b.date) - new Date(a.date);
+        }
+        if (sortTerm === 'goals') {
+            return b.totalGoals - a.totalGoals;
+        }
+        if (sortTerm === 'shots') {
+            return b.totalShots - a.totalShots;
+        }
+        if (sortTerm === 'passes') {
+            return b.totalPasses - a.totalPasses;
+        }
+        if (sortTerm === 'crosses') {
+            return b.totalCrosses - a.totalCrosses;
+        }
+    });
+
+
     // list of match-team pairs selected by user for comparison
     // e.g. [{matchId: 1, teamId: 1}, {matchId: 2, teamId: 2}]
     const [selectedMatches, setSelectedMatches] = useState([]);
@@ -92,14 +170,70 @@ export default function Matches({setMatchForStats, setMatchesForComparison, setT
     return (
         <MDBCard>
             <MDBCardBody>
-                {/* Add a refresh button, with just the icon  */}
+                {/* Add two search bars for team names, one date range search, and a sort dropdown */}
                 <MDBRow>
-                    <MDBCol sm='12'>
-                        <MDBBtn floating color='primary' className='float-end'>
-                            <MDBIcon fas icon='sync' />
-                        </MDBBtn>
+                    <MDBCol sm='12' md='6' lg='3'>
+                        <MDBInput
+                            label='Team 1 Name'
+                            value={team1NameSearch}
+                            onChange={(e) => setTeam1NameSearch(e.target.value)}
+                        />
+                    </MDBCol>
+                    <MDBCol sm='12' md='6' lg='3'>
+                        <MDBInput
+                            label='Team 2 Name'
+                            value={team2NameSearch}
+                            onChange={(e) => setTeam2NameSearch(e.target.value)}
+                        />
+                    </MDBCol>
+                    <MDBCol sm='12' md='6' lg='3'>
+                        <MDBInput
+                            label='Start Date'
+                            type='date'
+                            value={startDateSearch}
+                            onChange={(e) => setStartDateSearch(e.target.value)}
+                        />
+                    </MDBCol>
+                    <MDBCol sm='12' md='6' lg='3'>
+                        <MDBInput
+                            label='End Date'
+                            type='date'
+                            value={endDateSearch}
+                            onChange={(e) => setEndDateSearch(e.target.value)}
+                        />
                     </MDBCol>
                 </MDBRow>
+                <MDBRow end className='pt-2'>
+                    <MDBCol sm='12' md='6' lg='3'>
+                        <MDBCheckbox
+                                checked={showOnlyProcessed}
+                                onChange={(e) => setShowOnlyProcessed(e.target.checked)}
+                                label='Show only processed matches'
+                        />
+                    </MDBCol>
+                    <MDBCol sm='12' md='6' lg='3'>
+                        {/* Cannot use mdb select coz mdb is a peice of shit with pro packages, instead use dropdown */}
+                        <MDBDropdown className='shadow-0'>
+                            <MDBDropdownToggle caret color='secondary' className='float-end'>
+                                Sort By
+                            </MDBDropdownToggle>
+                            <MDBDropdownMenu>
+                                <MDBDropdownItem link onClick={() => setSortTerm('date')}>Date</MDBDropdownItem>
+                                <MDBDropdownItem link onClick={() => setSortTerm('goals')}>Goals</MDBDropdownItem>
+                                <MDBDropdownItem link onClick={() => setSortTerm('shots')}>Shots</MDBDropdownItem>
+                                <MDBDropdownItem link onClick={() => setSortTerm('passes')}>Passes</MDBDropdownItem>
+                                <MDBDropdownItem link onClick={() => setSortTerm('crosses')}>Crosses</MDBDropdownItem>
+                            </MDBDropdownMenu>
+                        </MDBDropdown>
+                    </MDBCol>
+                </MDBRow>
+                {/* Add a divider btween search and data*/}
+                <MDBRow className='pb-2'>
+                    <MDBCol>
+                        <hr/>
+                    </MDBCol>
+                </MDBRow>
+                {/* Add a table to display the filtered and sorted data */}
                 <MDBRow  className='justify-content-center text-center'>
                     <MDBCol sm='12'>
                         <MDBTable hover responsive className='text-nowrap' >
@@ -116,7 +250,7 @@ export default function Matches({setMatchForStats, setMatchesForComparison, setT
                             </tr>
                             </MDBTableHead>
                             <MDBTableBody>
-                                {data.map((match) => (
+                                {filteredData.map((match) => (
                                     <tr key={match.matchId}>
                                         <td>{match.matchId}</td>
                                         <td>{match.date}</td>
