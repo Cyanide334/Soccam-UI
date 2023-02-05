@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 import BarChart from '../assets/barChart';
 import {
     MDBRow,
@@ -19,109 +20,141 @@ import {
 } from 'mdb-react-ui-kit';
 
 export default function EventDetails({matchId, eventName, setVideoTime}) {
-    const eventData = {
-        event: 'Shots',
-        team1: {
-            name: 'Team 1',
-            color: 'blue',
-            total: 12,
-            quarter1: 3,
-            quarter2: 3,
-            quarter3: 3,
-            quarter4: 3,
-        },
-        team2: {
-            name: 'Team 2',
-            color: 'red',
-            total: 8,
-            quarter1: 2,
-            quarter2: 2,
-            quarter3: 2,
-            quarter4: 2,
-        },
-        timestamps: [
-            {
-                timestamp: "00:00:10",
-                teamId: 1,
-            },
-            {
-                timestamp: "00:00:20",
-                teamId: 2,
-            },
-            {
-                timestamp: "00:00:30",
-                teamId: 1,
-            },
-            {
-                timestamp: "00:00:40",
-                teamId: 2,
-            },
-            {
-                timestamp: "00:00:50",
-                teamId: 1,
-            },
-            {
-                timestamp: "00:01:00",
-                teamId: 2,
-            },
-            {
-                timestamp: "00:01:10",
-                teamId: 1,
-            },
-            {
-                timestamp: "00:01:20",
-                teamId: 2,
-            },
-            {
-                timestamp: "00:01:30",
-                teamId: 1,
-            },
-            {
-                timestamp: "00:01:40",
-                teamId: 2,
-            },
-            {
-                timestamp: "00:01:50",
-                teamId: 1,
-            },
-            {
-                timestamp: "00:02:00",
-                teamId: 2,
-            }
-        ]    
-    };
-    const labels = ['Total', 'Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4'];
-    const chartData = {
-        labels: labels,
-        datasets: [
-            {
-                label: eventData.team1.name,
-                data: [
-                    eventData.team1.total,
-                    eventData.team1.quarter1,
-                    eventData.team1.quarter2,
-                    eventData.team1.quarter3,
-                    eventData.team1.quarter4
+    
+    const [eventData, setEventData] = useState(null);
+    const [chartData, setChartData] = useState(null);
+
+    // get data from server
+    useEffect(() => {
+        console.log("getting event data for match: " + matchId)
+        if (matchId) {
+            axios.get(`/api/match/${matchId}/event/${eventName}`)
+                .then(res => {
+                    setEventData(res.data);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+            // for now set to dummy data
+            const eventData2 = {
+                event: 'Shots',
+                team1: {
+                    name: 'Team 1',
+                    color: 'blue',
+                    total: 12,
+                    quarter1: 3,
+                    quarter2: 3,
+                    quarter3: 3,
+                    quarter4: 3,
+                },
+                team2: {
+                    name: 'Team 2',
+                    color: 'red',
+                    total: 8,
+                    quarter1: 2,
+                    quarter2: 2,
+                    quarter3: 2,
+                    quarter4: 2,
+                },
+                timestamps: [
+                    {
+                        timestamp: "00:00:10",
+                        teamId: 1,
+                    },
+                    {
+                        timestamp: "00:00:20",
+                        teamId: 2,
+                    },
+                    {
+                        timestamp: "00:00:30",
+                        teamId: 1,
+                    },
+                    {
+                        timestamp: "00:00:40",
+                        teamId: 2,
+                    },
+                    {
+                        timestamp: "00:00:50",
+                        teamId: 1,
+                    },
+                    {
+                        timestamp: "00:01:00",
+                        teamId: 2,
+                    },
+                    {
+                        timestamp: "00:01:10",
+                        teamId: 1,
+                    },
+                    {
+                        timestamp: "00:01:20",
+                        teamId: 2,
+                    },
+                    {
+                        timestamp: "00:01:30",
+                        teamId: 1,
+                    },
+                    {
+                        timestamp: "00:01:40",
+                        teamId: 2,
+                    },
+                    {
+                        timestamp: "00:01:50",
+                        teamId: 1,
+                    },
+                    {
+                        timestamp: "00:02:00",
+                        teamId: 2,
+                    }
+                ]    
+            };
+            setEventData(eventData2);
+        }
+    }, [matchId, eventName]);
+    
+    // set chart data
+    useEffect(() => {
+        if (eventData) {
+            const chartData2 = {
+                labels: ['Total', 'Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4'],
+                datasets: [
+                    {
+                        label: eventData.team1.name,
+                        data: [
+                            eventData.team1.total,
+                            eventData.team1.quarter1,
+                            eventData.team1.quarter2,
+                            eventData.team1.quarter3,
+                            eventData.team1.quarter4
+                        ],
+                    },
+                    {
+                        label: eventData.team2.name,
+                        data: [
+                            eventData.team2.total,
+                            eventData.team2.quarter1,
+                            eventData.team2.quarter2,
+                            eventData.team2.quarter3,
+                            eventData.team2.quarter4
+                        ],
+                    },
                 ],
-            },
-            {
-                label: eventData.team2.name,
-                data: [
-                    eventData.team2.total,
-                    eventData.team2.quarter1,
-                    eventData.team2.quarter2,
-                    eventData.team2.quarter3,
-                    eventData.team2.quarter4
-                ],
-            },
-        ],
-    };
+            };
+            setChartData(chartData2);
+        }
+    }, [eventData]);
 
     const [eventModal, setEventModal] = useState(false);
     const toggleShow = () => setEventModal(!eventModal);
 
+    //return null when no data present
+    if (!eventData || !chartData) {
+        return null;
+    }
+
     return (
+        
         <>
+        {eventData && chartData && (<>
             <MDBBtn color='primary' outline onClick={toggleShow}>
                 View Details
             </MDBBtn>
@@ -170,6 +203,7 @@ export default function EventDetails({matchId, eventName, setVideoTime}) {
                     </MDBModalContent>
                 </MDBModalDialog>
             </MDBModal>
-        </>
+        </>)}
+        </>                          
     );
 }

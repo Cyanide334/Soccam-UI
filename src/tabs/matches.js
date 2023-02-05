@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
     MDBRow,
     MDBCol,
@@ -24,73 +25,88 @@ import {
 } from 'mdb-react-ui-kit';
 
 export default function Matches({setMatchForStats, setMatchesForComparison, setTab}){
-    const data=[
-        {
-            matchId: 1,
-            date: '2021-01-01',
-            team1Name: 'Team 1',
-            team2Name: 'Team 2',
-            team1Goals: 3,
-            team2Goals: 3,
-            processedPercentage: 100,
-            totalGoals: 6,
-            totalShots: 10,
-            totalPasses: 100,
-            totalCrosses: 10,
-        },
-        {
-            matchId: 2,
-            date: '2021-01-02',
-            team1Name: 'Team 3',
-            team2Name: 'Team 4',
-            team1Goals: 2,
-            team2Goals: 1,
-            processedPercentage: 100,
-            totalGoals: 3,
-            totalShots: 10,
-            totalPasses: 80,
-            totalCrosses: 7,
-        },
-        {
-            matchId: 3,
-            date: '2021-01-03',
-            team1Name: 'Team 5',
-            team2Name: 'Team 6',
-            team1Goals: 1,
-            team2Goals: 2,
-            processedPercentage: 100,
-            totalGoals: 3,
-            totalShots: 5,
-            totalPasses: 50,
-            totalCrosses: 3,
-        },
-        {
-            matchId: 4,
-            date: '2021-01-04',
-            team1Name: 'Team 7',
-            team2Name: 'Team 8',
-            team1Goals: 1,
-            team2Goals: 0,
-            processedPercentage: 100,
-            totalGoals: 1,
-            totalShots: 5,
-            totalPasses: 50,
-            totalCrosses: 20,
-        },
-        {
-            matchId: 5,
-            date: '2021-01-05',
-            team1Name: 'Team 9',
-            team2Name: 'Team 10',
-            team1Goals: 0,
-            team2Goals: 1,
-            processedPercentage: 75,
-            totalGoals: 0,
-            totalShots: 0,
-            totalPasses: 0,
-            totalCrosses: 0,
-        },
-    ];
+    // all match data with some summary
+    const [data, setData] = useState([]);
+
+    // we get the data from the server
+    useEffect(() => {
+        axios.get('/api/matches')
+            .then((response) => {
+                setData(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        //for now we use dummy data
+        const data2=[
+            {
+                matchId: 1,
+                date: '2021-01-01',
+                team1Name: 'Team 1',
+                team2Name: 'Team 2',
+                team1Goals: 3,
+                team2Goals: 3,
+                processedPercentage: 100,
+                totalGoals: 6,
+                totalShots: 10,
+                totalPasses: 100,
+                totalCrosses: 10,
+            },
+            {
+                matchId: 2,
+                date: '2021-01-02',
+                team1Name: 'Team 3',
+                team2Name: 'Team 4',
+                team1Goals: 2,
+                team2Goals: 1,
+                processedPercentage: 100,
+                totalGoals: 3,
+                totalShots: 10,
+                totalPasses: 80,
+                totalCrosses: 7,
+            },
+            {
+                matchId: 3,
+                date: '2021-01-03',
+                team1Name: 'Team 5',
+                team2Name: 'Team 6',
+                team1Goals: 1,
+                team2Goals: 2,
+                processedPercentage: 100,
+                totalGoals: 3,
+                totalShots: 5,
+                totalPasses: 50,
+                totalCrosses: 3,
+            },
+            {
+                matchId: 4,
+                date: '2021-01-04',
+                team1Name: 'Team 7',
+                team2Name: 'Team 8',
+                team1Goals: 1,
+                team2Goals: 0,
+                processedPercentage: 100,
+                totalGoals: 1,
+                totalShots: 5,
+                totalPasses: 50,
+                totalCrosses: 20,
+            },
+            {
+                matchId: 5,
+                date: '2021-01-05',
+                team1Name: 'Team 9',
+                team2Name: 'Team 10',
+                team1Goals: 0,
+                team2Goals: 1,
+                processedPercentage: 75,
+                totalGoals: 0,
+                totalShots: 0,
+                totalPasses: 0,
+                totalCrosses: 0,
+            },
+        ];
+        setData(data2);
+    }, []);
 
     // search terms
     const [team1NameSearch, setTeam1NameSearch] = useState('');
@@ -269,7 +285,7 @@ export default function Matches({setMatchForStats, setMatchesForComparison, setT
                                             <MDBBtn
                                                 color='primary'
                                                 onClick={() => {
-                                                    setMatchForStats(match);
+                                                    setMatchForStats(match.matchId);
                                                     setTab("eventStats");
                                                 }}
                                                 disabled={match.processedPercentage < 100}

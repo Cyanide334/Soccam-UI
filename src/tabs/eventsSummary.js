@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import EventDetails from './eventDetails';
 import {
     MDBRow,
@@ -16,38 +17,55 @@ import {
 // shows a summary for event statistics such as number of shots, goals, passes, crosses etc.
 
 export default function EventsSummary({matchId, setTab, setVideoTime}) {
-    const statSummaryData = {
-        team1: {
-            name: 'Team 1',
-            shots: 10,
-            goals: 3,
-            passes: 100,
-            crosses: 10,
-            fouls: 10,
-            offsides: 10,
-            corners: 10,
-            yellowCards: 10,
-            redCards: 10,
-            possession: 10,
-        },
-        team2: {
-            name: 'Team 2',
-            shots: 10,
-            goals: 3,
-            passes: 100,
-            crosses: 10,
-            fouls: 10,
-            offsides: 10,
-            corners: 10,
-            yellowCards: 10,
-            redCards: 10,
-            possession: 10,
-        },
-    };
+    // get stat summary data from server
+    const [statSummaryData, setStatSummaryData] = useState(null);
+    useEffect(() => {
+        console.log("getting stat summary data for match: " + matchId)
+        if (matchId) {
+            axios.get(`/api/match/${matchId}/statSummary`)
+                .then(res => {
+                    setStatSummaryData(res.data);
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+            console.log("getting DUMMY stat summary data for match: " + matchId)
+            // for now set to dummy data
+            const statSummaryData2 = {
+                team1: {
+                    name: 'Team 1',
+                    shots: 10,
+                    goals: 3,
+                    passes: 100,
+                    crosses: 10,
+                    fouls: 10,
+                    offsides: 10,
+                    corners: 10,
+                    yellowCards: 10,
+                    redCards: 10,
+                    possession: 10,
+                },
+                team2: {
+                    name: 'Team 2',
+                    shots: 10,
+                    goals: 3,
+                    passes: 100,
+                    crosses: 10,
+                    fouls: 10,
+                    offsides: 10,
+                    corners: 10,
+                    yellowCards: 10,
+                    redCards: 10,
+                    possession: 10,
+                },
+            };
+            setStatSummaryData(statSummaryData2);
+        }
+    }, [matchId]);
     
     return (
         <>
-        {!matchId &&
+        {!statSummaryData &&
             <MDBCard>
               <MDBCardBody>
                 <MDBCardText className="text-center">
@@ -73,7 +91,7 @@ export default function EventsSummary({matchId, setTab, setVideoTime}) {
               </MDBCardBody>
             </MDBCard>
         }
-        {matchId &&
+        {statSummaryData &&
             <MDBRow center className="h-100">
                 <MDBCol lg="9">
                     <MDBTable hover align='middle' striped responsive className='text-center text-nowrap'>

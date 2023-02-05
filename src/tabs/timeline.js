@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
+import axios from "axios";
 import {
     MDBCard,
     MDBCardBody,
@@ -10,57 +11,72 @@ import {
     MDBBadge,
 } from "mdb-react-ui-kit";
 
-const sampleTimelineData = [
-  {
-    teamId: 1,
-    teamName: "Team 1",
-    timestamp: "00:00:30",
-    event: "Shot",
-    description: "Team 1 took a shot",
-  },
-  {
-    teamId: 2,
-    teamName: "Team 2",
-    timestamp: "00:00:40",
-    event: "Shot",
-    description: "Team 2 took a shot",
-  },
-  {
-    teamId: 1,
-    teamName: "Team 1",
-    timestamp: "00:00:50",
-    event: "Shot",
-    description: "Team 1 took a shot",
-  },
-  {
-    teamId: 2,
-    teamName: "Team 2",
-    timestamp: "00:01:00",
-    event: "Shot",
-    description: "Team 2 took a shot",
-  },
-  {
-    teamId: 1,
-    teamName: "Team 1",
-    timestamp: "00:01:10",
-    event: "Shot",
-    description: "Team 1 took a shot",
-  },
-  {
-    teamId: 2,
-    teamName: "Team 2",
-    timestamp: "00:01:20",
-    event: "Shot",
-    description: "Team 2 took a shot",
-  },
-];
-
 
 export default function Timeline({matchId, setTab, setVideoTime}) {
+  // get timeline data from server
+  const [timelineData, setTimelineData] = useState(null);
+  useEffect(() => {
+    console.log("getting timeline data for match: " + matchId);
+    if (matchId) {
+      axios.get(`/api/match/${matchId}/timeline`)
+        .then(res => {
+          setTimelineData(res.data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      // for now set to dummy data
+      const sampleTimelineData = [
+        {
+          teamId: 1,
+          teamName: "Team 1",
+          timestamp: "00:00:30",
+          event: "Shot",
+          description: "Team 1 took a shot",
+        },
+        {
+          teamId: 2,
+          teamName: "Team 2",
+          timestamp: "00:00:40",
+          event: "Shot",
+          description: "Team 2 took a shot",
+        },
+        {
+          teamId: 1,
+          teamName: "Team 1",
+          timestamp: "00:00:50",
+          event: "Shot",
+          description: "Team 1 took a shot",
+        },
+        {
+          teamId: 2,
+          teamName: "Team 2",
+          timestamp: "00:01:00",
+          event: "Shot",
+          description: "Team 2 took a shot",
+        },
+        {
+          teamId: 1,
+          teamName: "Team 1",
+          timestamp: "00:01:10",
+          event: "Shot",
+          description: "Team 1 took a shot",
+        },
+        {
+          teamId: 2,
+          teamName: "Team 2",
+          timestamp: "00:01:20",
+          event: "Shot",
+          description: "Team 2 took a shot",
+        },
+      ];
+      setTimelineData(sampleTimelineData);
+    }
+  }, [matchId]);
 
   return (
     <div className="">
-      {!matchId &&
+      {!timelineData &&
         <MDBCard>
           <MDBCardBody>
             <MDBCardText className="text-center">
@@ -87,11 +103,11 @@ export default function Timeline({matchId, setTab, setVideoTime}) {
         </MDBCard>
       }
       {/* Event timeline for match events such as shots, passes, goals  etc*/}
-      {matchId &&
+      {timelineData &&
         <section className="rounded-5  grey-background">
           <div className="container py-5">
             <div className="main-timeline">
-              {sampleTimelineData.map((event, index) => (
+              {timelineData.map((event, index) => (
                 <div className={event.teamId===1 ? "timeline left" : "timeline right"}>
                   <MDBCard>
                     <MDBCardBody className="p-4 rounded" style={{backgroundColor: event.teamId === 1 ? '#9ad0f5' : '#ffb1c1'}}>
